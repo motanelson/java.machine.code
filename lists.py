@@ -44,7 +44,7 @@ for aaa in bb:
             u="nop\n"
             steps=steps+1
             if steps==5:
-                exit(0)
+                pass
         g=aaa.find(": ")
         if g>-1:
             
