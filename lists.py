@@ -17,7 +17,9 @@ f1=open("output.jbin","bw")
 op="JBIN".encode()
 f1.write(op)
 f1.close()
+f1=open("/tmp/output.jbin","bw")
 
+f1.close()
 i=bytearray([0])
 bb=aa.split("\n")
 steps=0
@@ -29,8 +31,36 @@ for aaa in bb:
         gg=aaa.find("public")
         ggg=aaa.find(" static")
         gggg=aaa.find("void")
-        if (g>-1 or gg>-1 or ggg>-1) and steps==0:
-            
+        if (g>-1 or gg>-1 or ggg>-1 or gggg>-1) and steps==0:
+            zzz=aaa.replace("private","")
+            zzz=zzz.replace("public","")
+            zzz=zzz.replace("static","")
+            zzz=zzz.replace("void","")
+            zzz=zzz.replace("int","")
+            zzz=zzz.replace("long","")
+            zzz=zzz.replace("float","")
+            zzz=zzz.replace("double","")
+            zzz=zzz.replace("String","")
+            zzz=zzz.replace("class","")
+            zzz=zzz.replace("{","")
+            zzz=zzz.strip()
+            g=zzz.find("(")
+            if g>-1:
+                zzz=zzz[:g]
+            g=zzz.find(" ")
+            if g>-1:
+                zzz=zzz[:g]
+            zzz=zzz.strip()
+            f1=open("output.jbin","ba")
+            zz=zzz.encode()
+            zz=zz+bytearray([0])
+            pp=len(zz)
+            f1.write(bytearray([1,0,pp]))
+            #print(zz)
+            #print(aaa)
+            f1.write(zz)
+            f1.close()
+
             f1=open("/tmp/output.jbin","ba")
             pp=len(i)
             f1.write(bytearray([1,0,pp]))
