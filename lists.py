@@ -49,6 +49,11 @@ for aaa in bb:
             if g>-1:
                 zz=aaa[g+2:]
                 zz=zz.strip()
+                gg=zz.find(" ")
+                if gg>-1:
+                    zz=zz[gg+1:]
+                    #print(zz)
+                zz=zz.strip()
                 f1=open("output.jbin","ba")
                 zzz=zz.encode()
                 zzz=zzz+bytearray([0])
