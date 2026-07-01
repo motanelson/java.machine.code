@@ -12,25 +12,22 @@ a=input().strip()
 #a="Hello.java"
 b=a.find(".")
 c=a
+xzz=a
 if b>-1:
     c=a[:b]+".class"
-
+    xzz=a[:b]+".jbin"
 os.system("javac --release 25 "+a)
 os.system("javap -c -private "+c+" >/tmp/output.txt")
 f1=open("/tmp/output.txt","r")
 aa=f1.read()
 f1.close()
-f1=open("output.jbin","bw")
-op="JBIN".encode()
-f1.write(op)
-f1.close()
-f1=open("/tmp/output.jbin","bw")
-
-f1.close()
 i=bytearray([0])
 bb=aa.split("\n")
 steps=0
 u="nop\n"
+lasts=""
+functions=[[255,"",bytearray([1,0,1,0])]]
+values=[[255,"",bytearray([1,0,1,32])]]
 for aaa in bb:
     aaa=aaa.strip()
     if aaa!="":
@@ -58,18 +55,26 @@ for aaa in bb:
             if g>-1:
                 zzz=zzz[:g]
             zzz=zzz.strip()
-            f1=open("output.jbin","ba")
             zz=zzz.encode()
             zz=zz+bytearray([0])
             pp=len(zz)
-            f1.write(bytearray([1,0,pp]))
-            #print(zz)
-            #print(aaa)
-            f1.write(zz)
-            f1.close()
-
-            saves(i)
+            ff=bytearray([1,0,pp])            
+            ff=ff+zz
+            n=254
+            if zzz=="main":
+                n=0
+            values.append([n,zzz,ff])
+            ni=len(i)
+            i=bytearray([1,0,ni])+i
+            
+            if lasts=="main":
+                functions.append([0,lasts,i])
+            else:
+                functions.append([254,lasts,i])
             u="nop\n"
+            
+            lasts=zzz
+            
             i=bytearray([0])
             
         g=aaa.find(": ")
@@ -85,17 +90,18 @@ for aaa in bb:
                 gg=zz.find(" ")
                 if gg>-1:
                     zz=zz[gg+1:]
-                    #print(zz)
+                    
                 zz=zz.strip()
-                f1=open("output.jbin","ba")
+                
                 zzz=zz.encode()
                 zzz=zzz+bytearray([0])
                 pp=len(zz)
-                f1.write(bytearray([1,0,pp]))
-                #print(zzz)
-                f1.write(zzz)
-                f1.close()
-                 
+                ff=bytearray([1,0,pp])
+                
+                ff=ff+zzz
+                
+                ass=ff
+                azz=zz
                 aaa=aaa[:g]
             aaa=aaa.strip()
             g=aaa.find("#")
@@ -115,6 +121,9 @@ for aaa in bb:
                     
                     i=i+bytearray([int(ii)])
                     i=i+bytearray([int(n)])
+                    if azz=="main":
+                        n=0
+                    values.append([n,azz,ass])
                 except:
                     print(xxx+" error:")
             else:
@@ -131,14 +140,44 @@ for aaa in bb:
             
         g=aaa.find("}")
         if g>-1:
-            saves(i)
+            ni=len(i)
+            i=bytearray([1,0,ni])+i
+            n=254
+            if lasts=="main":
+                n=0
+            functions.append([n,lasts,i])
+            
             u="nop\n"
             i=bytearray([0])
             u="nop\n"
-f1=open("/tmp/output.jbin","br")
-zzz=f1.read()
+functions.sort()
+#print(functions)
+print("-"*20)
+values.sort()
+#print(values)
+
+
+op="JBIN".encode()
+xb=0
+for f in values:
+    a=f[0]-xb
+    if f[0]<254:
+         for t in range(a-1):
+             ppp=values[len(values)-1]
+             op=op+ppp[2]
+    op=op+f[2]
+    xb=f[0]
+xb=0
+for f in functions:
+    a=f[0]-xb
+    if f[0]<254:
+         for t in range(a-1):
+             ppp=functions[len(funcions)-1]
+             op=op+ppp[2]
+
+    op=op+f[2]
+    xb=f[0]
+f1=open(xzz,"bw")
+
+f1.write(op)
 f1.close()
-f1=open("output.jbin","ba")
-f1.write(zzz)
-f1.close()
-#os.system("rasm2 -a java -b 16 -D -B -f output.jbin")
